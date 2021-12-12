@@ -10,10 +10,15 @@ variable "pm_target_node" {
 
 variable "pm_clone_name" {
 	default     = "ubuntu-template"
-	description = "Name of Proxmox VM Template to clone"
+	description = "Name of Proxmox vm template to clone"
 }
 
 variable "user" {
 	default     = "m"
-	description = "Primary User"
+	description = "Primary user"
+}
+
+variable "ssh_key_private" {
+	default     = "~/.ssh/id_rsa"
+	description = "Private ssh key location"
 }
