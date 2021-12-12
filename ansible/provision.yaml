@@ -65,8 +65,8 @@
        copy:
          src: "{{ item.src }}"
          dest: "{{ item.dest }}"
-         owner: notroot
-         group: notroot
+         owner: "{{ user }}"
+         group: "{{ user }}"
          mode: 0400
        with_items:
          - { src: 'authorized_keys', dest: "/home/{{ user }}/.ssh/authorized_keys" }
