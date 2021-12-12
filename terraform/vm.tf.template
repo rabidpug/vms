@@ -6,7 +6,6 @@
 * -------------
 * [~name~]: Name of the resource, also name of ansible playbook
 * [~count~]: Number of resources to create (1-9)
-* [~template~]: Name of the Proxmox VM template
 * [~prefix~]: Prefix for the resource (0-9)
 * [~cores~]: Number of cores
 * [~memory~]: Amount of memory
@@ -20,7 +19,7 @@ resource "proxmox_vm_qemu" "~name~" {
   name = ~count~ > 1 ? "~name~-${count.index + 1}" : ~name~
   target_node = var.pm_target_node
   vmid = "~prefix~${count.index}"
-  clone = ~template~
+  clone = var.pm_clone_name
 
   cores = ~cores~
   memory = ~memory~
