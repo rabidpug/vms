@@ -1,0 +1,77 @@
+/**
+* Template will define how many VMs to create, their names and IDs, cores and memory, boot storage, IP address, and run ansible playbook
+* Additional settings can be added/modified
+* 
+* placeholders:
+* -------------
+* [~name~]: Name of the resource, also name of ansible playbook
+* [~count~]: Number of resources to create (1-9)
+* [~prefix~]: Prefix for the resource (0-9)
+* [~cores~]: Number of cores
+* [~memory~]: Amount of memory
+* [~storage~]: Storage to use
+* [~size~]: Size of storage
+* 
+**/
+
+resource "proxmox_vm_qemu" "~name~" {
+  count = ~count~
+  name = ~count~ > 1 ? "~name~-${count.index + 1}" : ~name~
+  target_node = var.pm_target_node
+  vmid = "~prefix~${count.index}"
+  clone = var.pm_clone_name
+
+  cores = ~cores~
+  memory = ~memory~
+
+  scsihw = "virtio-scsi-pci"
+
+  agent =  1
+  cpu = "kvm64"
+  hotplug = "network,disk,usb,cpu,memory"
+  
+  network {
+    bridge = "vmbr0"
+    model = "virtio"
+  }
+  
+  ipconfig0 = "ip=10.0.0."~prefix~${count.index}"/24,gw=10.0.0.1"
+  
+  disk {
+    type = "virtio"
+    storage = ~storage~
+    size = ~size~
+  }
+
+  os_type = "cloud-init"
+  
+  #creates ssh connection to check when the CT is ready for ansible provisioning
+  connection {
+    host = "10.0.0.~prefix~${count.index}"
+    user = var.user
+    private_key = file(var.ssh_key_private)
+    agent = false
+    timeout = "3m"
+  }
+
+  provisioner "remote-exec" {
+	  # Leave this here so we know when to start with Ansible local-exec 
+    inline = [ "echo 'Ready for provisioning'"]
+  }
+  
+  provisioner "local-exec" {
+      working_dir = "../ansible/"
+      command = "ansible-playbook -u ${var.user} --key-file ${var.ssh_key_private} -i 10.0.0.~prefix~${count.index}, provision.yaml"
+  }
+  
+  
+  provisioner "local-exec" {
+      working_dir = "../ansible/"
+      command = "ansible-playbook -u ${var.user} --key-file ${var.ssh_key_private} -i 10.0.0.~prefix~${count.index}, ~name~.yaml"
+  }
+  
+  provisioner "local-exec" {
+      working_dir = "../ansible/"
+      command = "ansible-playbook -u ${var.user} --key-file ${var.ssh_key_private} -i 10.0.0.~prefix~${count.index}, install-qemu-guest-agent.yaml"
+  }
+}
