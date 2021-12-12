@@ -8,6 +8,11 @@ variable "pm_target_node" {
 	description = "Proxmox target node"
 }
 
+variable "pm_clone_name" {
+	default     = "ubuntu-template"
+	description = "Name of Proxmox VM Template to clone"
+}
+
 variable "user" {
 	default     = "m"
 	description = "Primary User"
