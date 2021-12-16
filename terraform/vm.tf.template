@@ -1,8 +1,5 @@
 resource "proxmox_vm_qemu" "~name~" {
   count = ~count~
-  locals {
-    id = "1~prefix~${count.index}"
-  }
   name = ~count~ > 1 ? "~name~-${count.index + 1}" : "~name~"
   target_node = var.pm_target_node
   vmid = "1~prefix~${count.index}"
