@@ -54,6 +54,6 @@ resource "proxmox_vm_qemu" "~name~" {
 
   provisioner "local-exec" {
       working_dir = "../ansible/"
-      command = "ansible-playbook -u ${var.user} --key-file ${var.ssh_key_private} -i 10.0.0.1~prefix~${count.index}, ~name~.yaml"
+      command = "test -f ~name~.yaml && ansible-playbook -u ${var.user} --key-file ${var.ssh_key_private} -i 10.0.0.1~prefix~${count.index}, ~name~.yaml || echo 'no playbook available'"
   }
  }
