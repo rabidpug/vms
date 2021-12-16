@@ -25,7 +25,8 @@ echo cores: $cores
 echo memory: $memory
 echo storage: $storage
 echo size: $size
-read  -n 1 -p "Continue? (y/n)" inp
+read  -n 1 -p "Continue? (y/n) " inp
+echo ''
 
 if [ "$inp" = "y" ] || [ "$inp" = "Y" ]; then
   echo creating resource
